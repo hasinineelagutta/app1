@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopSphere - E-Commerce</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        /* Navbar */
+        header {
+            background: #111827;
+            color: white;
+            padding: 18px 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #38bdf8;
+        }
+
+        .search {
+            width: 40%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+        }
+
+        .cart-btn {
+            background: #38bdf8;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #0f172a, #2563eb);
+            color: white;
+            padding: 70px 6%;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
+
+        .shop-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background: white;
+            color: #2563eb;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Categories */
+        .categories {
+            text-align: center;
+            padding: 30px 6%;
+        }
+
+        .categories button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .categories button:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* Products */
+        .products {
+            padding: 20px 6% 60px;
+        }
+
+        .products h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .product {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .product:hover {
+            transform: translateY(-5px);
+        }
+
+        .product img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 18px;
+        }
+
+        .product-info h3 {
+            margin-bottom: 8px;
+        }
+
+        .price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2563eb;
+            margin: 10px 0;
+        }
+
+        .rating {
+            color: #f59e0b;
+        }
+
+        .add-cart {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            background: #111827;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .add-cart:hover {
+            background: #2563eb;
+        }
+
+        /* Cart */
+        .cart {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 360px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+            padding: 25px;
+            z-index: 200;
+            transition: 0.3s;
+            overflow-y: auto;
+        }
+
+        .cart.active {
+            right: 0;
+        }
+
+        .cart h2 {
+            margin-bottom: 20px;
+        }
+
+        .close-cart {
+            float: right;
+            cursor: pointer;
+            font-size: 22px;
+        }
+
+        .cart-item {
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+
+        .cart-item button {
+            margin: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+
+        .total {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .checkout {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            background: #16a34a;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Footer */
+        footer {
+            background: #111827;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        @media(max-width: 700px) {
+            header {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .search {
+                width: 100%;
+                order: 3;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .cart {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <div class="logo">Shop<span>Sphere</span></div>
+
+        <input
+            type="text"
+            id="search"
+            class="search"
+            placeholder="Search products..."
+            onkeyup="searchProducts()"
+        >
+
+        <button class="cart-btn" onclick="openCart()">
+            🛒 Cart (<span id="cart-count">0</span>)
+        </button>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>Welcome to ShopSphere</h1>
+        <p>Everything you need, all in one place.</p>
+        <button class="shop-btn" onclick="scrollToProducts()">
+            Shop Now
+        </button>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories">
+        <h2>Categories</h2>
+
+        <button onclick="filterProducts('all')">All</button>
+        <button onclick="filterProducts('electronics')">Electronics</button>
+        <button onclick="filterProducts('fashion')">Fashion</button>
+        <button onclick="filterProducts('shoes')">Shoes</button>
+    </section>
+
+    <!-- Products -->
+    <section class="products" id="products">
+
+        <h2>Popular Products</h2>
+
+        <div class="product-grid" id="product-grid">
+
+            <div class="product" data-category="electronics">
+                <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e">
+                <div class="product-info">
+                    <h3>Wireless Headphones</h3>
+                    <p>High quality wireless headphones.</p>
+                    <div class="rating">★★★★★</div>
+                    <div class="price">₹2,499</div>
+
+                    <button class="add-cart"
+                        onclick="addToCart('Wireless Headphones',2499)">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product" data-category="electronics">
+                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30">
+                <div class="product-info">
+                    <h3>Smart Watch</h3>
+                    <p>Smart fitness watch with health tracking.</p>
+                    <div class="rating">★★★★☆</div>
+                    <div class="price">₹3,999</div>
+
+                    <button class="add-cart"
+                        onclick="addToCart('Smart Watch',3999)">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product" data-category="fashion">
+                <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab">
+                <div class="product-info">
+                    <h3>Classic T-Shirt</h3>
+                    <p>Comfortable cotton T-shirt.</p>
+                    <div class="rating">★★★★★</div>
+                    <div class="price">₹799</div>
+
+                    <button class="add-cart"
+                        onclick="addToCart('Classic T-Shirt',799)">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+            <div class="product" data-category="shoes">
+                <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff">
+                <div class="product-info">
+                    <h3>Running Shoes</h3>
+                    <p>Comfortable shoes for everyday use.</p>
+                    <div class="rating">★★★★☆</div>
+                    <div class="price">₹1,999</div>
+
+                    <button class="add-cart"
+                        onclick="addToCart('Running Shoes',1999)">
+                        Add to Cart
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Cart -->
+    <div class="cart" id="cart">
+
+        <span class="close-cart" onclick="closeCart()">✖</span>
+
+        <h2>Your Cart</h2>
+
+        <div id="cart-items"></div>
+
+        <div class="total">
+            Total: ₹<span id="total">0</span>
+        </div>
+
+        <button class="checkout" onclick="checkout()">
+            Proceed to Checkout
+        </button>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 ShopSphere | E-Commerce Website</p>
+    </footer>
+
+
+    <script>
+
+        let cart = [];
+
+        function addToCart(name, price) {
+
+            let existing = cart.find(item => item.name === name);
+
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({
+                    name: name,
+                    price: price,
+                    quantity: 1
+                });
+            }
+
+            updateCart();
+
+            alert(name + " added to cart!");
+        }
+
+
+        function updateCart() {
+
+            let cartItems = document.getElementById("cart-items");
+
+            cartItems.innerHTML = "";
+
+            let total = 0;
+            let count = 0;
+
+            cart.forEach((item, index) => {
+
+                total += item.price * item.quantity;
+                count += item.quantity;
+
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+
+                        <h3>${item.name}</h3>
+
+                        <p>₹${item.price}</p>
+
+                        <button onclick="decrease(${index})">−</button>
+
+                        ${item.quantity}
+
+                        <button onclick="increase(${index})">+</button>
+
+                        <button onclick="removeItem(${index})">
+                            Remove
+                        </button>
+
+                    </div>
+                `;
+            });
+
+            document.getElementById("total").innerText = total;
+            document.getElementById("cart-count").innerText = count;
+        }
+
+
+        function increase(index) {
+
+            cart[index].quantity++;
+
+            updateCart();
+        }
+
+
+        function decrease(index) {
+
+            if (cart[index].quantity > 1) {
+                cart[index].quantity--;
+            } else {
+                cart.splice(index, 1);
+            }
+
+            updateCart();
+        }
+
+
+        function removeItem(index) {
+
+            cart.splice(index, 1);
+
+            updateCart();
+        }
+
+
+        function openCart() {
+
+            document.getElementById("cart")
+                .classList.add("active");
+        }
+
+
+        function closeCart() {
+
+            document.getElementById("cart")
+                .classList.remove("active");
+        }
+
+
+        function checkout() {
+
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            alert("Order placed successfully! 🎉");
+
+            cart = [];
+
+            updateCart();
+
+            closeCart();
+        }
+
+
+        function searchProducts() {
+
+            let search =
+                document.getElementById("search")
+                .value.toLowerCase();
+
+            let products =
+                document.querySelectorAll(".product");
+
+            products.forEach(product => {
+
+                let name =
+                    product.querySelector("h3")
+                    .innerText.toLowerCase();
+
+                if (name.includes(search)) {
+                    product.style.display = "block";
+                } else {
+                    product.style.display = "none";
+                }
+            });
+        }
+
+
+        function filterProducts(category) {
+
+            let products =
+                document.querySelectorAll(".product");
+
+            products.forEach(product => {
+
+                if (
+                    category === "all" ||
+                    product.dataset.category === category
+                ) {
+                    product.style.display = "block";
+                } else {
+                    product.style.display = "none";
+                }
+            });
+        }
+
+
+        function scrollToProducts() {
+
+            document.getElementById("products")
+                .scrollIntoView({
+                    behavior: "smooth"
+                });
+        }
+
+    </script>
+
+</body>
+</html>
